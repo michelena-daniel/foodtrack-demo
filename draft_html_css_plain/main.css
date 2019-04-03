@@ -1,0 +1,55 @@
+@import "normalize";
+
+body{
+
+    background-image: url(./img/opacitychange.jpeg);
+    font-family: 'Indie Flower', cursive;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+.buttonContainer{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 40vh;
+}
+
+.logo{
+    text-align: center;
+    font-size: 3rem;
+}
+
+.buttonContainer a{
+    font-size: 1.5rem;
+    color: white;
+    font-weight: bolder;
+    text-decoration: none;
+    background-color: transparent;
+    padding: 1rem;
+    margin: 1.5rem;
+    border: 2px solid black;
+    border-radius: 8px;
+    transition: 1s;
+    width: 6rem;
+}
+
+.buttonContainer a:hover{
+    background-color: lightblue;
+}
+
+.foodtrack {
+    color: rgb(192, 0, 0);
+    font-style: italic;
+}
+.menu img {
+    min-width: 3%;
+    max-width: 3%;
+    transition: 1s;
+}
+
+.menu img:hover{
+    transform: scale(1.1);
+}
