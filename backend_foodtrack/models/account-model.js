@@ -14,18 +14,16 @@ const accountSchema = new Schema({
     email: String,
     password: String,
     createdAt: Date, 
-    verificationCode: {
-        type: String,
-        unique: true,
-    },
-    verified_at: Date
+    verification: [{
+      verificationCode: String,
+      createdAt: Date,
+      verifiedAt: Date,
+    }],
   });
 
   //convert the schema to a model
   
   const Account = mongoose.model('Account', accountSchema);
-  
 module.exports = Account;
-  
 
 

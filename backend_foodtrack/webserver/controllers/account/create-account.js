@@ -15,27 +15,28 @@ async function insertAccountIntoDatabase(email, password) {
   const now = new Date();
   const createdAt = now.toISOString().substring(0, 19).replace('T', ' ');
 
-  console.log('secure password', securePassword);
-  console.log('createdAt', createdAt);
-  console.log('uuid', uuid);
+
 
   const data = {
-    uuid: uuid,
-    email: String,
-    password: String,
-    createdAt: createdAt,
-    verificationCode: String,
-    // verified_at: ???
+    uuid,
+    email,
+    password: securePassword,
+    createdAt,
   };
 
-  try {
-    await AccountModel.create(data);
 
+  try{
+    
+    await AccountModel.create(data);
     return uuid;
 
-  } catch (e) {
-    return res.status(500).send(e.message);
+  }catch(e){
+    console.log("",e)
+
   }
+
+
+  
 }
 
 async function validate(payload) {
@@ -71,7 +72,7 @@ async function validate(payload) {
     }
   }
 
-  async function sendEmailRegistration(userEmail, verificationCode) {
+  async function sendEmailRegistration(userEmail, verificationCode ){
     const msg = {
       to: userEmail,
       from: {
@@ -89,38 +90,45 @@ async function validate(payload) {
   }
 
   async function addVerificationCode(uuid) {
-    const verificationCode = uuidV4();
     const now = new Date();
-    const verifiedAt = now.toISOString().substring(0, 19).replace('T', ' ');
+    const verificationCode = uuidV4();
+    const createdAt = now.toISOString().substring(0, 19).replace('T', ' ');
     
     //insert the verification code in mongo and send the status, return the code
 
     try {
+
+      // update del account para meterle el campo verificationCode que es OBJETO
       const filter = {
         uuid,
       };
-      const operation = {
-        $addToSet: {
-          verificationCode: verificationCode,
-          verified_at: verifiedAt,
+      
+      const op = {
+        $push: {
+          verification: {
+            verificationCode,
+            createdAt,
+            verifiedAt: null,
+          },
         },
       };
   
-      await AccountModel.findOneAndUpdate(filter, operation, options);
+      await AccountModel.findOneAndUpdate(filter, op);
   
-      return (res.status(201).send('Verificacion creada'), verificationCode);
+      return verificationCode;
+
     } catch (e) {
-      return res.status(500).send(e.message);
+      console.error(e)
     }
   }
 
   async function createAccount(req, res, next) {
     const accountData = { ...req.body };
-  
     // Validate user data or send 400 bad request err
 
     try {
       await validate(accountData);
+
     } catch (e) {
       // Create validation error
       return res.status(400).send(e);
@@ -133,8 +141,9 @@ async function validate(payload) {
   
     try {
       // Create the account and send the OK response
-      
+      console.log("33333333333333333333333" + email + " " + password)
       const uuid = await insertAccountIntoDatabase(email, password);
+      console.log("ALIBABA uuuuuuuuuuuid es -> ",uuid)
       res.status(204).json();      
   
       /**
@@ -150,7 +159,7 @@ async function validate(payload) {
         const verificationCode = await addVerificationCode(uuid);
 
         await sendEmailRegistration(email, verificationCode);
-        
+        res.status(204).send()
       } catch (e) {
         console.error('Sengrid error', e);
       }
