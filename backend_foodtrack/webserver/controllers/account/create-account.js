@@ -6,6 +6,7 @@ const sendgridMail = require('@sendgrid/mail');
 const uuidV4 = require('uuid/v4');
 const AccountModel = require('../../../models/account-model');
 const UserModel = require('../../../models/user-model');
+const verificationCode = uuidV4();
 
 sendgridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -22,6 +23,10 @@ async function insertAccountIntoDatabase(email, password) {
     email,
     password: securePassword,
     createdAt,
+    verification: {
+      verificationCode,
+      verifiedAt: null,
+    }
   };
 
 
@@ -89,39 +94,6 @@ async function validate(payload) {
     return data;
   }
 
-  async function addVerificationCode(uuid) {
-    const now = new Date();
-    const verificationCode = uuidV4();
-    const createdAt = now.toISOString().substring(0, 19).replace('T', ' ');
-    
-    //insert the verification code in mongo and send the status, return the code
-
-    try {
-
-      // update del account para meterle el campo verificationCode que es OBJETO
-      const filter = {
-        uuid,
-      };
-      
-      const op = {
-        $push: {
-          verification: {
-            verificationCode,
-            createdAt,
-            verifiedAt: null,
-          },
-        },
-      };
-  
-      await AccountModel.findOneAndUpdate(filter, op);
-  
-      return verificationCode;
-
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
   async function createAccount(req, res, next) {
     const accountData = { ...req.body };
     // Validate user data or send 400 bad request err
@@ -155,11 +127,8 @@ async function validate(payload) {
       // Generate verification code and send email
        
       try {
-        
-        const verificationCode = await addVerificationCode(uuid);
 
         await sendEmailRegistration(email, verificationCode);
-        res.status(204).send()
       } catch (e) {
         console.error('Sengrid error', e);
       }

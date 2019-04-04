@@ -16,7 +16,6 @@ const accountSchema = new Schema({
     createdAt: Date, 
     verification: [{
       verificationCode: String,
-      createdAt: Date,
       verifiedAt: Date,
     }],
   });
