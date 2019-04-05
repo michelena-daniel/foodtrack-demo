@@ -15,15 +15,15 @@ async function activate(req, res, next) {
     try {
         const now = new Date();
         const verifiedAt = now.toISOString().substring(0, 19).replace('T', ' ');
-        // update del account para meterle el verifiedAt
+        // update account to add the verified at date
         const filter = {
-          verificationCode,
+          'verification.verificationCode': verificationCode,
         };
         
         const op = {
-          $push: {
+          $set: {
             verification: {
-              verifiedAt,
+              verifiedAt: verifiedAt,
             },
           },
         };

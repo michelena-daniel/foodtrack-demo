@@ -16,8 +16,6 @@ async function insertAccountIntoDatabase(email, password) {
   const now = new Date();
   const createdAt = now.toISOString().substring(0, 19).replace('T', ' ');
 
-
-
   const data = {
     uuid,
     email,
@@ -29,7 +27,6 @@ async function insertAccountIntoDatabase(email, password) {
     }
   };
 
-
   try{
     
     await AccountModel.create(data);
@@ -38,10 +35,7 @@ async function insertAccountIntoDatabase(email, password) {
   }catch(e){
     console.log("",e)
 
-  }
-
-
-  
+  }  
 }
 
 async function validate(payload) {

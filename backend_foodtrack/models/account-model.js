@@ -14,10 +14,10 @@ const accountSchema = new Schema({
     email: String,
     password: String,
     createdAt: Date, 
-    verification: [{
+    verification: {
       verificationCode: String,
       verifiedAt: Date,
-    }],
+    },
   });
 
   //convert the schema to a model
